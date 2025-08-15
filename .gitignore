@@ -1,0 +1,11 @@
+config.ini
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.db
+*.sqlite3
+*.log
+*.csv
+log_manager/logging_configs/
