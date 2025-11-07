@@ -6,15 +6,27 @@ from io import BytesIO
 from datetime import datetime
 from log_manager.setup import get_logger
 from typing import Any, Dict, List, Optional
+import os
+import sys
+
+
 
 logger = get_logger(__name__)
 
 _INVALID_SHEET_CHARS = set("[]:*?/\\")
 
+def _config_dir():
+    if getattr(sys, "frozen", False):
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(os.path.abspath(__file__))
 
 def get_onedrive_credentials():
     config = configparser.ConfigParser()
-    config.read("config.ini")
+    config_path = os.path.join(_config_dir(), "config.ini")
+    logger.info("Loading OneDrive configuration from %s", config_path)
+    read_files = config.read(config_path)
+    if not read_files:
+        logger.warning("config.ini could not be read from %s", config_path)
     return config["OneDrive_Config"]
 
 
@@ -92,10 +104,12 @@ def upload_to_onedrive(
 
         # Resolve defaults
         resolved_filename = generate_filename(filename)
+        
         resolved_folder = (
-            folder_path
-            or "General/SECUR - Central Operations Management Hub/Claims File Exchange & Audit Oversight/Audit Reports"
-        )
+                folder_path
+                or "General/SECUR - Central Operations Management Hub/Claims File Exchange & Audit Oversight/Audit Reports"
+            )
+
 
         access_token = get_access_token()
         creds = get_onedrive_credentials()

@@ -23,10 +23,10 @@ def main():
 
     database_name = "SECUR_INSIGHTS"
 
-    logger.info("Fetching Medicare rate mismatch data from %s...", database_name)
-    medicare_rows = safe_fetch(
-        fetch_medicare_rate_mismatch_data, database_name, "Medicare rate mismatch"
-    )
+    # logger.info("Fetching Medicare rate mismatch data from %s...", database_name)
+    # medicare_rows = safe_fetch(
+    #     fetch_medicare_rate_mismatch_data, database_name, "Medicare rate mismatch"
+    # )
 
     logger.info("Fetching Multiplan terminated providers from %s...", database_name)
     terminated_rows = safe_fetch(
@@ -36,20 +36,21 @@ def main():
     )
 
     # Upload each dataset separately
-    if medicare_rows:
-        logger.info("Preparing Medicare payload (%d rows)...", len(medicare_rows))
-        medicare_payload = build_medicare_payload(medicare_rows)
-        logger.info("Uploading Medicare payload to OneDrive...")
+    # if medicare_rows:
+    #     logger.info("Preparing Medicare payload (%d rows)...", len(medicare_rows))
+    #     medicare_payload = build_medicare_payload(medicare_rows)
+    #     logger.info("Uploading Medicare payload to OneDrive...")
 
-        if medicare_payload:
-            upload_with_retry(
-                medicare_payload,
-                upload_fn=upload_to_onedrive,
-                sheet_name="MedicareRateMismatch",
-                filename="MedicareRate",
-            )
-        else:
-            logger.warning("No Medicare rate mismatch rows to upload.")
+    #     if medicare_payload:
+    #         upload_with_retry(
+    #             medicare_payload,
+    #             upload_fn=upload_to_onedrive,
+    #             sheet_name="MedicareRateMismatch",
+    #             filename="MedicareRate",
+    #             folder_path="General/SECUR - Central Operations Management Hub/Claims File Exchange & Audit Oversight/Audit Reports/CDB Audit",
+    #         )
+    #     else:
+    #         logger.warning("No Medicare rate mismatch rows to upload.")
 
     if terminated_rows:
         logger.info(
@@ -63,6 +64,7 @@ def main():
                 upload_fn=upload_to_onedrive,
                 sheet_name="TerminatedProviders",
                 filename="MultiplanTerminatedProviders",
+                folder_path="General/SECUR - Central Operations Management Hub/Claims File Exchange & Audit Oversight/Audit Reports/Multiplan Terminated Providers",
             )
     else:
         logger.warning("No terminated providers rows to upload.")

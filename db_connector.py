@@ -1,12 +1,31 @@
-import pyodbc
 import configparser
+import os
+import sys
+
+import pyodbc
+
+from log_manager.setup import get_logger
+
+logger = get_logger(__name__)
+
+
+def _config_path() -> str:
+    if getattr(sys, "frozen", False):
+        base_dir = os.path.dirname(sys.executable)
+    else:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_dir, "config.ini")
 
 
 def get_sql_credentials():
     config = configparser.ConfigParser()
-    config.read("config.ini")
+    path = _config_path()
+    logger.info("Loading SQL credentials from %s", path)
+    read_files = config.read(path)
+    if not read_files:
+        logger.warning("config.ini could not be read from %s", path)
     return config["SQL_Credentials"]
-
+ 
 
 def connect_to_sql(database_name):
     credentials = get_sql_credentials()
